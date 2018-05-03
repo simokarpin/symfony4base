@@ -10,8 +10,10 @@ services:
 
 # Cache composer packages so "composer install" is faster
 cache:
+  yarn: true
   directories:
     - $HOME/.composer/cache/files
+    - node_modules
 
 # Matrix to test in every php version
 matrix:
@@ -30,12 +32,14 @@ env:
 # Update composer
 before-install:
   - composer self-update
+  - apt install yarn
 
 # Install composer dependencies,
 # Create database, schema and fixtures
 install:
   - composer install
-  - cp app/config/parameters.yml.dist app/config/parameters.yml
+  - yarn install
+  - yarn run dev
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:schema:create --env=test
   - php bin/console doctrine:fixtures:load -n --env=test
